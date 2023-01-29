@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -31,6 +32,8 @@ public class AuthorizationHeaderFilter extends
     @Value("${jwt.secret}")
     private String secretKey;
 
+    private final RedisTemplate<String, Object> redisTemplate;
+
     /**
      * JWT를 생성하기 위해 HMAC-SHA 알고리즘으로 JWT에 서명할 키를 생성합니다.
      *
@@ -45,8 +48,9 @@ public class AuthorizationHeaderFilter extends
     }
 
 
-    public AuthorizationHeaderFilter() {
+    public AuthorizationHeaderFilter(RedisTemplate<String, Object> redisTemplate) {
         super(Config.class);
+        this.redisTemplate = redisTemplate;
     }
 
     /**
@@ -76,6 +80,15 @@ public class AuthorizationHeaderFilter extends
                 return onError(exchange, "No authorization header", HttpStatus.UNAUTHORIZED);
             }
 
+            String uuid = request.getHeaders().get("UUID").get(0);
+            log.info("uuid={}", uuid);
+
+            if (Objects.isNull(redisTemplate.opsForHash().get(uuid, "temp"))) {
+                log.info("로그아웃된 사용자");
+
+                return onError(exchange, "Already logged out", HttpStatus.UNAUTHORIZED);
+            }
+
             String authorizationHeader = request.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
             String jwt = authorizationHeader.replace("Bearer ", "");
             log.info("jwt={}", jwt);
@@ -83,6 +96,15 @@ public class AuthorizationHeaderFilter extends
             if (!isJwtValid(jwt)) {
                 return onError(exchange, "JWT token is not valid", HttpStatus.UNAUTHORIZED);
             }
+
+            log.info("loginId={}", extractLoginId(jwt));
+            log.info("roles={}", extractRoles(jwt));
+
+            exchange.getRequest()
+                    .mutate()
+                    .header("AUTH-ID", extractLoginId(jwt))
+                    .header("AUTH-ROLES", extractRoles(jwt))
+                    .build();
 
             return chain.filter(exchange);
         };
@@ -138,5 +160,24 @@ public class AuthorizationHeaderFilter extends
         }
 
         return returnValue;
+    }
+
+    private String extractLoginId(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSecretKey(secretKey))
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
+    private String extractRoles(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSecretKey(secretKey))
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("roles")
+                .toString();
     }
 }
