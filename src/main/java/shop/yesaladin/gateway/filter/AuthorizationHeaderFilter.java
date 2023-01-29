@@ -29,6 +29,9 @@ import reactor.core.publisher.Mono;
 public class AuthorizationHeaderFilter extends
         AbstractGatewayFilterFactory<AuthorizationHeaderFilter.Config> {
 
+    private static final String UUID_KEY = "UUID";
+    private static final String LOGON_KEY = "LOGON";
+
     @Value("${jwt.secret}")
     private String secretKey;
 
@@ -80,10 +83,10 @@ public class AuthorizationHeaderFilter extends
                 return onError(exchange, "No authorization header", HttpStatus.UNAUTHORIZED);
             }
 
-            String uuid = request.getHeaders().get("UUID").get(0);
+            String uuid = request.getHeaders().get(UUID_KEY).get(0);
             log.info("uuid={}", uuid);
 
-            if (Objects.isNull(redisTemplate.opsForHash().get(uuid, "temp"))) {
+            if (Objects.isNull(redisTemplate.opsForHash().get(uuid, LOGON_KEY))) {
                 log.info("로그아웃된 사용자");
 
                 return onError(exchange, "Already logged out", HttpStatus.UNAUTHORIZED);
@@ -130,8 +133,7 @@ public class AuthorizationHeaderFilter extends
     }
 
     /**
-     * JWT 토큰의 유효성을 검증하는 기능입니다.
-     * 토큰을 생성할 때 사용 했던 secret key를 기반으로 유효한 토큰인지, 만료 기간이 지나지 않았는지를 판단 합니다.
+     * JWT 토큰의 유효성을 검증하는 기능입니다. 토큰을 생성할 때 사용 했던 secret key를 기반으로 유효한 토큰인지, 만료 기간이 지나지 않았는지를 판단 합니다.
      *
      * @param jwt Authorization Header에 들어있는 JWT 토큰 입니다.
      * @return 토큰의 유효성 판단 결과 입니다.
@@ -162,6 +164,14 @@ public class AuthorizationHeaderFilter extends
         return returnValue;
     }
 
+    /**
+     * JWT Token을 parsing 하여 loginId를 반환 하기 위한 기능 입니다.
+     *
+     * @param token JWT Token 입니다.
+     * @return token의 payload에 들어 있는 loginId를 반환 합니다.
+     * @author : 송학현
+     * @since : 1.0
+     */
     private String extractLoginId(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSecretKey(secretKey))
@@ -171,6 +181,14 @@ public class AuthorizationHeaderFilter extends
                 .getSubject();
     }
 
+    /**
+     * JWT Token을 parsing 하여 권한 정보를 반환 하기 위한 기능 입니다.
+     *
+     * @param token JWT Token 입니다.
+     * @return token의 payload에 들어 있는 권한 정보를 반환 합니다.
+     * @author : 송학현
+     * @since : 1.0
+     */
     private String extractRoles(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSecretKey(secretKey))
