@@ -21,8 +21,8 @@ import reactor.core.publisher.Mono;
 /**
  * JWT 토큰의 유효성을 검증 하여 인증 처리를 해주는 필터 입니다.
  *
- * @author : 송학현
- * @since : 1.0
+ * @author 송학현
+ * @since 1.0
  */
 @Slf4j
 @Component
@@ -42,8 +42,8 @@ public class AuthorizationHeaderFilter extends
      *
      * @param secretKey JWT를 생성하기 위해 사용하는 secretKey 입니다.
      * @return 인코딩 된 secretKey를 기반으로 HMAC-SHA 알고리즘으로 생성한 Key를 반환합니다.
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     private Key getSecretKey(String secretKey) {
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
@@ -59,8 +59,8 @@ public class AuthorizationHeaderFilter extends
     /**
      * 설정 클래스 입니다.
      *
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     public static class Config {
 
@@ -71,8 +71,8 @@ public class AuthorizationHeaderFilter extends
      *
      * @param config 필터의 설정 클래스 입니다.
      * @return Spring Cloud Gateway에서 작동 하는 filter 입니다.
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     @Override
     public GatewayFilter apply(Config config) {
@@ -121,8 +121,8 @@ public class AuthorizationHeaderFilter extends
      * @param err        Error 메시지 입니다.
      * @param httpStatus Http 상태 코드입니다.
      * @return error 발생 시 응답 결과 입니다.
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     private Mono<Void> onError(ServerWebExchange exchange, String err, HttpStatus httpStatus) {
         ServerHttpResponse response = exchange.getResponse();
@@ -137,8 +137,8 @@ public class AuthorizationHeaderFilter extends
      *
      * @param jwt Authorization Header에 들어있는 JWT 토큰 입니다.
      * @return 토큰의 유효성 판단 결과 입니다.
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     private boolean isJwtValid(String jwt) {
         boolean returnValue = true;
@@ -169,8 +169,8 @@ public class AuthorizationHeaderFilter extends
      *
      * @param token JWT Token 입니다.
      * @return token의 payload에 들어 있는 loginId를 반환 합니다.
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     private String extractLoginId(String token) {
         return Jwts.parserBuilder()
@@ -186,8 +186,8 @@ public class AuthorizationHeaderFilter extends
      *
      * @param token JWT Token 입니다.
      * @return token의 payload에 들어 있는 권한 정보를 반환 합니다.
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     private String extractRoles(String token) {
         return Jwts.parserBuilder()

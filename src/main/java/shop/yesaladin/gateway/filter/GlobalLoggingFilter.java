@@ -12,8 +12,8 @@ import reactor.core.publisher.Mono;
 /**
  * Gateway 전역에서 확인하기 위한 Logging Filter 입니다.
  *
- * @author : 송학현
- * @since : 1.0
+ * @author 송학현
+ * @since 1.0
  */
 @Slf4j
 @Component
@@ -26,8 +26,8 @@ public class GlobalLoggingFilter extends AbstractGatewayFilterFactory<GlobalLogg
     /**
      * 설정 클래스 입니다.
      *
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     @Data
     public static class Config {
@@ -41,8 +41,8 @@ public class GlobalLoggingFilter extends AbstractGatewayFilterFactory<GlobalLogg
      *
      * @param config 필터의 설정 클래스 입니다.
      * @return Spring Cloud Gateway에서 작동 하는 filter 입니다.
-     * @author : 송학현
-     * @since : 1.0
+     * @author 송학현
+     * @since 1.0
      */
     @Override
     public GatewayFilter apply(Config config) {
