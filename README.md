@@ -40,7 +40,7 @@ YesAladin Gateway는 각 마이크로서비스 또는 데이터와 접속하고 
 변경된 flow는 다음과 같습니다.
 
 Shop API Server는 Front Server로부터 Authorization Header에 담긴 JWT 토큰 정보를 받아 이에 대한 인가 처리를 사전에 Auth Server로 위임합니다. 
-Auth Server에서 해당 JWT 토큰의 유효성 검증이 완료 되어 인가 된 경우, payload에 들어있는 사용자 식별 정보와 권한 정보를 추출하여 Shop API Server에 돌려줍니다.
+Auth Server에서 해당 JWT 토큰의 유효성 검증이 완료되어 인가 된 경우, payload에 들어있는 사용자 식별 정보와 권한 정보를 추출하여 Shop API Server에 돌려줍니다.
 이 정보를 바탕으로 Shop API Server 내에서 Spring Security를 통해 자체적으로 `Authentication` 을 생성하도록 처리하였으며, `FilterSecurityInterceptor` 및
 method security를 적용하여 API 보안을 강화하였습니다.
 
