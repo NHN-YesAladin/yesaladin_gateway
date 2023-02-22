@@ -25,7 +25,7 @@ YesAladin Gateway는 각 마이크로서비스 또는 데이터와 접속하고 
 
 ## Project Architecture
 
-![스크린샷 2023-02-21 오후 11 33 40](https://user-images.githubusercontent.com/60968342/220375047-30f90da4-a1eb-4988-acfa-f18a1b24b53f.png)
+<img width="1055" alt="스크린샷 2023-02-22 오전 10 15 46" src="https://user-images.githubusercontent.com/60968342/220496058-1c3dce6d-9473-4a1c-acd7-834ab511bf85.png">
 
 ## Technical Issue
 
